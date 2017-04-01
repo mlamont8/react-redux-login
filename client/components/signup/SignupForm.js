@@ -1,6 +1,7 @@
 import React from 'react';
 import timezones from '../../data/timezones';
 import map from 'lodash/map';
+import classnames from 'classnames';
 
 class SignupForm extends React.Component {
 
@@ -11,7 +12,9 @@ class SignupForm extends React.Component {
       email: '',
       password: '',
       passwordConfirmation: '',
-      timezone: ''
+      timezone: '',
+      errors: {},
+      isLoading: false
     }
     this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
@@ -22,11 +25,16 @@ class SignupForm extends React.Component {
   }
 
   onSubmit(e) {
+    this.setState({errors: {}, isLoading: true });
     e.preventDefault();
-    this.props.userSignupRequest(this.state);
+    this.props.userSignupRequest(this.state).then(
+      () => {},
+      ({data}) => this.setState({errors: data, isLoading: false })
+    );
   }
 
   render() {
+    const { errors } = this.state;
     const options = map(timezones, (val, key)=>
   <option key={val} value={val}>{key}</option>
 );
@@ -34,7 +42,7 @@ class SignupForm extends React.Component {
       <form onSubmit={this.onSubmit}>
         <h1> Join our community! </h1>
 
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.username})}>
           <label className="control-label">Username</label>
           <input
             value={this.state.username}
@@ -43,9 +51,10 @@ class SignupForm extends React.Component {
             name="username"
             className="form-control"
           />
+          {errors.username && <span className="help-block">{errors.username}</span>}
         </div>
 
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.email})}>
           <label className="control-label">Email</label>
           <input
             value={this.state.email}
@@ -55,7 +64,7 @@ class SignupForm extends React.Component {
             className="form-control"
           />
         </div>
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.password})}>
           <label className="control-label">Password</label>
           <input
             value={this.state.password}
@@ -65,7 +74,7 @@ class SignupForm extends React.Component {
             className="form-control"
           />
         </div>
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.passwordConfirmation})}>
           <label className="control-label">Password Confirmation</label>
           <input
             value={this.state.passwordConfirmation}
@@ -76,7 +85,7 @@ class SignupForm extends React.Component {
           />
         </div>
 
-        <div className="form-group">
+        <div className={classnames("form-group", { 'has-error': errors.timezone})}>
           <label className="control-label">Timezone</label>
           <select
             value={this.state.timezone}
@@ -91,7 +100,7 @@ class SignupForm extends React.Component {
 
 
         <div className="form-group">
-          <button className="btn btn-primary btn-lg">
+          <button disabled={this.state.isLoading} className="btn btn-primary btn-lg">
             Sign up
           </button>
         </div>
