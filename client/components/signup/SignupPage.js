@@ -1,18 +1,28 @@
 import React from 'react';
 import SignupForm from './SignupForm';
+import { connect } from 'react-redux';
+import { userSignupRequest } from '../../actions/signupActions';
 
 
-export default React.createClass({
+
+class SignupPage extends React.Component {
 
   render() {
-    return (
-      <div className="row">
-        <div className="col-md-4 col-md-offest-4">
-          <SignupForm />
+    const{ userSignupRequest } =  this.props;
+      return (
+        <div className="row">
+          <div className="col-md-4 col-md-offest-4">
+            <SignupForm userSignupRequest={userSignupRequest} />
+          </div>
         </div>
-      </div>
 
-    );
-  }
+      );
+    }
+    }
 
-});
+
+export default connect(null, {userSignupRequest})(SignupPage);
+
+SignupPage.propTypes = {
+  userSignupRequest: React.PropTypes.func.isRequired
+}
